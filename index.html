@@ -1,567 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Namara — Your Name, Your Story</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-:root {
-  --ink: #0e0c1a;
-  --paper: #fdfbf7;
-  --accent: #7c5cbf;
-  --accent2: #e8855a;
-  --accent3: #4aada8;
-  --soft: #f0ecf8;
-  --muted: #8a849a;
-  --gold: #d4a843;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Outfit', sans-serif;
-  background: var(--ink);
-  color: var(--paper);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* BG */
-.bg-layer {
-  position: fixed; inset: 0; z-index: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(124,92,191,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(74,173,168,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 50% 50%, rgba(232,133,90,0.06) 0%, transparent 70%);
-}
-.stars {
-  position: fixed; inset: 0; z-index: 0;
-  background-image:
-    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 100%),
-    radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 70% 50%, rgba(255,255,255,0.35) 0%, transparent 100%),
-    radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.25) 0%, transparent 100%),
-    radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.3) 0%, transparent 100%),
-    radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.2) 0%, transparent 100%),
-    radial-gradient(1px 1px at 30% 45%, rgba(255,255,255,0.15) 0%, transparent 100%);
-}
-
-/* LAYOUT */
-.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 48px 24px 80px; }
-
-/* HEADER */
-header { text-align: center; margin-bottom: 56px; }
-.brand {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.4rem; font-weight: 400;
-  letter-spacing: 0.04em;
-  background: linear-gradient(135deg, var(--paper) 0%, var(--gold) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: 8px;
-}
-.tagline { font-size: 0.85rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
-
-/* INPUT AREA */
-.input-section { width: 100%; max-width: 560px; margin-bottom: 48px; }
-.input-wrap {
-  display: flex; gap: 12px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 100px;
-  padding: 8px 8px 8px 28px;
-  backdrop-filter: blur(12px);
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-.input-wrap:focus-within {
-  border-color: rgba(124,92,191,0.6);
-  box-shadow: 0 0 0 4px rgba(124,92,191,0.1);
-}
-.name-input {
-  flex: 1; background: none; border: none; outline: none;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem; color: var(--paper);
-  letter-spacing: 0.05em;
-}
-.name-input::placeholder { color: rgba(253,251,247,0.3); }
-.btn-discover {
-  background: linear-gradient(135deg, var(--accent), #9b77e8);
-  color: white; border: none; border-radius: 100px;
-  padding: 14px 28px; font-family: 'Outfit', sans-serif;
-  font-size: 0.85rem; font-weight: 500; letter-spacing: 0.08em;
-  cursor: pointer; transition: all 0.3s; white-space: nowrap;
-}
-.btn-discover:hover { transform: scale(1.03); box-shadow: 0 8px 30px rgba(124,92,191,0.4); }
-.btn-discover:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-/* LOADING */
-.loading {
-  display: none; flex-direction: column; align-items: center; gap: 16px;
-  padding: 60px 0;
-}
-.loading.show { display: flex; }
-.loading-orb {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
-  animation: pulse-orb 1.8s ease-in-out infinite;
-}
-@keyframes pulse-orb {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(124,92,191,0.4); }
-  50% { transform: scale(1.15); box-shadow: 0 0 50px rgba(124,92,191,0.7); }
-}
-.loading-text {
-  font-size: 0.9rem; color: var(--muted);
-  animation: blink 1.8s ease-in-out infinite;
-}
-@keyframes blink { 0%,100%{opacity:0.4} 50%{opacity:1} }
-
-/* CARD */
-.card-outer {
-  width: 100%; max-width: 640px;
-  display: none; flex-direction: column; align-items: center; gap: 20px;
-}
-.card-outer.show { display: flex; }
-
-#name-card {
-  width: 100%;
-  background: linear-gradient(145deg, #1a1530 0%, #120f22 60%, #1a1530 100%);
-  border: 1px solid rgba(124,92,191,0.3);
-  border-radius: 24px;
-  padding: 48px 44px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
-}
-
-/* Card decorative elements */
-#name-card::before {
-  content: '';
-  position: absolute; top: -100px; right: -100px;
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(124,92,191,0.2) 0%, transparent 70%);
-  border-radius: 50%;
-}
-#name-card::after {
-  content: '';
-  position: absolute; bottom: -80px; left: -80px;
-  width: 250px; height: 250px;
-  background: radial-gradient(circle, rgba(74,173,168,0.15) 0%, transparent 70%);
-  border-radius: 50%;
-}
-.card-content { position: relative; z-index: 1; }
-
-.card-top {
-  display: flex; justify-content: space-between; align-items: flex-start;
-  margin-bottom: 32px;
-}
-.card-brand {
-  font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-}
-.card-origin-badge {
-  background: rgba(124,92,191,0.2);
-  border: 1px solid rgba(124,92,191,0.4);
-  border-radius: 100px; padding: 4px 14px;
-  font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
-  color: #c4a8f0;
-}
-
-.card-name-display {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(3rem, 10vw, 5rem);
-  font-weight: 700; line-height: 0.9;
-  background: linear-gradient(135deg, #ffffff 0%, var(--gold) 50%, #e8a5d0 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: 6px; letter-spacing: -0.01em;
-}
-.card-meaning-line {
-  font-family: 'Playfair Display', serif;
-  font-style: italic; font-size: 1.1rem;
-  color: var(--gold); margin-bottom: 32px; opacity: 0.9;
-}
-
-.card-divider {
-  height: 1px; background: linear-gradient(to right, transparent, rgba(124,92,191,0.4), rgba(212,168,67,0.4), transparent);
-  margin-bottom: 32px;
-}
-
-.traits-row {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px;
-}
-.trait-pill {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 100px; padding: 6px 16px;
-  font-size: 0.78rem; color: rgba(255,255,255,0.8);
-  letter-spacing: 0.04em;
-}
-
-.card-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 16px; margin-bottom: 28px;
-}
-.card-item {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 12px; padding: 16px;
-}
-.item-label {
-  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 6px;
-}
-.item-value {
-  font-size: 0.95rem; color: var(--paper); font-weight: 400;
-  display: flex; align-items: center; gap: 8px;
-}
-.item-dot {
-  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-}
-
-.quote-block {
-  background: rgba(124,92,191,0.1);
-  border-left: 3px solid var(--accent);
-  border-radius: 0 12px 12px 0;
-  padding: 18px 20px; margin-bottom: 28px;
-}
-.quote-text {
-  font-family: 'Playfair Display', serif;
-  font-style: italic; font-size: 1rem;
-  color: rgba(255,255,255,0.85); line-height: 1.6;
-}
-
-.famous-section { margin-bottom: 24px; }
-.famous-label {
-  font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 10px;
-}
-.famous-names {
-  display: flex; flex-wrap: wrap; gap: 8px;
-}
-.famous-tag {
-  background: rgba(212,168,67,0.12);
-  border: 1px solid rgba(212,168,67,0.25);
-  border-radius: 6px; padding: 5px 12px;
-  font-size: 0.78rem; color: var(--gold);
-}
-
-.card-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-}
-.card-footer-brand {
-  font-family: 'Playfair Display', serif;
-  font-size: 0.9rem; color: rgba(255,255,255,0.2);
-}
-.lucky-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem; font-weight: 700;
-  background: linear-gradient(135deg, var(--accent2), var(--gold));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.lucky-num-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-align: right; }
-
-/* ACTION BUTTONS */
-.card-actions { display: flex; gap: 12px; width: 100%; }
-.btn-action {
-  flex: 1; padding: 14px 20px; border-radius: 12px;
-  font-family: 'Outfit', sans-serif; font-size: 0.82rem;
-  font-weight: 500; letter-spacing: 0.06em; cursor: pointer;
-  transition: all 0.3s; border: none; display: flex;
-  align-items: center; justify-content: center; gap: 8px;
-}
-.btn-download {
-  background: linear-gradient(135deg, var(--accent), #9b77e8);
-  color: white;
-}
-.btn-download:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(124,92,191,0.4); }
-.btn-share {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: var(--paper);
-}
-.btn-share:hover { background: rgba(255,255,255,0.12); }
-.btn-new {
-  background: rgba(212,168,67,0.12);
-  border: 1px solid rgba(212,168,67,0.25);
-  color: var(--gold);
-}
-.btn-new:hover { background: rgba(212,168,67,0.2); }
-
-/* EXAMPLES */
-.examples {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
-  max-width: 480px; margin-top: 8px;
-}
-.example-name {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 100px; padding: 6px 18px;
-  font-size: 0.8rem; color: rgba(255,255,255,0.6);
-  cursor: pointer; transition: all 0.2s;
-}
-.example-name:hover { background: rgba(124,92,191,0.2); border-color: rgba(124,92,191,0.5); color: white; }
-
-.examples-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-align: center; width: 100%; margin-bottom: 4px; }
-
-/* ERROR */
-.error-msg {
-  display: none; background: rgba(232,133,90,0.15);
-  border: 1px solid rgba(232,133,90,0.3);
-  border-radius: 12px; padding: 14px 20px;
-  font-size: 0.85rem; color: var(--accent2); text-align: center;
-  max-width: 480px;
-}
-.error-msg.show { display: block; }
-
-/* ANIMATIONS */
-@keyframes fadeInUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform: translateY(0); } }
-.card-outer.show { animation: fadeInUp 0.6s ease forwards; }
-
-@media (max-width: 520px) {
-  #name-card { padding: 32px 24px; }
-  .card-grid { grid-template-columns: 1fr; }
-  .card-actions { flex-wrap: wrap; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Discover the meaning, personality, and magic behind any name. Generate a beautiful shareable card instantly." />
+  <title>Nameura — Discover Your Name's Magic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="bg-layer"></div>
-<div class="stars"></div>
 
-<div class="page">
+  <div class="bg-orb orb1"></div>
+  <div class="bg-orb orb2"></div>
+  <div class="bg-orb orb3"></div>
+
   <header>
-    <div class="brand">Namara ✦</div>
-    <div class="tagline">Discover the magic behind your name</div>
+    <div class="logo">✦ Nameura</div>
+    <p class="tagline">Discover the magic behind your name</p>
   </header>
 
-  <div class="input-section">
-    <div class="input-wrap">
-      <input class="name-input" id="nameInput" type="text" placeholder="Enter any name…" maxlength="40" autocomplete="off"/>
-      <button class="btn-discover" id="discoverBtn" onclick="generateCard()">✦ Discover</button>
-    </div>
-  </div>
+  <main>
+    <section class="search-section">
+      <h1>What does your<br/><em>name</em> mean?</h1>
+      <p class="sub">Type any name — English, Arabic, Indian, Korean &amp; more</p>
 
-  <div class="examples">
-    <div class="examples-label">Try a name</div>
-    <span class="example-name" onclick="tryName('Sarah')">Sarah</span>
-    <span class="example-name" onclick="tryName('Mohammed')">Mohammed</span>
-    <span class="example-name" onclick="tryName('Priya')">Priya</span>
-    <span class="example-name" onclick="tryName('Lucas')">Lucas</span>
-    <span class="example-name" onclick="tryName('Aisha')">Aisha</span>
-    <span class="example-name" onclick="tryName('Yuki')">Yuki</span>
-  </div>
-
-  <div class="loading" id="loading">
-    <div class="loading-orb"></div>
-    <div class="loading-text">Uncovering the story of your name…</div>
-  </div>
-
-  <div class="error-msg" id="errorMsg"></div>
-
-  <div class="card-outer" id="cardOuter">
-    <div id="name-card">
-      <div class="card-content">
-        <div class="card-top">
-          <div class="card-brand">Namara · Name Story</div>
-          <div class="card-origin-badge" id="cardOrigin">Origin</div>
-        </div>
-        <div class="card-name-display" id="cardName">Name</div>
-        <div class="card-meaning-line" id="cardMeaning">"meaning"</div>
-        <div class="card-divider"></div>
-        <div class="traits-row" id="cardTraits"></div>
-        <div class="card-grid">
-          <div class="card-item">
-            <div class="item-label">Lucky Color</div>
-            <div class="item-value"><div class="item-dot" id="colorDot"></div><span id="cardColor">—</span></div>
-          </div>
-          <div class="card-item">
-            <div class="item-label">Lucky Number</div>
-            <div class="item-value" id="cardNumber">—</div>
-          </div>
-          <div class="card-item">
-            <div class="item-label">Element</div>
-            <div class="item-value" id="cardElement">—</div>
-          </div>
-          <div class="card-item">
-            <div class="item-label">Birthstone</div>
-            <div class="item-value" id="cardBirthstone">—</div>
-          </div>
-        </div>
-        <div class="quote-block">
-          <div class="quote-text" id="cardQuote">"…"</div>
-        </div>
-        <div class="famous-section">
-          <div class="famous-label">Famous People With This Name</div>
-          <div class="famous-names" id="cardFamous"></div>
-        </div>
-        <div class="card-footer">
-          <div class="card-footer-brand">namara.app</div>
-          <div>
-            <div class="lucky-num" id="cardLuckyNum">7</div>
-            <div class="lucky-num-label">Lucky #</div>
-          </div>
-        </div>
+      <div class="search-box">
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter a name..."
+          maxlength="40"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          aria-label="Enter a name to discover its meaning"
+        />
+        <button id="generateBtn" aria-label="Generate name card">
+          <span class="btn-text">Discover</span>
+          <span class="btn-icon">✦</span>
+        </button>
       </div>
+
+      <div class="example-names">
+        <span class="example-label">Try:</span>
+        <button class="example-chip" data-name="Layla">Layla</button>
+        <button class="example-chip" data-name="Arjun">Arjun</button>
+        <button class="example-chip" data-name="Sofia">Sofia</button>
+        <button class="example-chip" data-name="Kai">Kai</button>
+        <button class="example-chip" data-name="Amara">Amara</button>
+      </div>
+    </section>
+
+    <div id="loadingState" class="loading-state hidden" aria-live="polite">
+      <div class="spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring"></div>
+      </div>
+      <p class="loading-text">Uncovering the magic of <span id="loadingName"></span>...</p>
     </div>
 
-    <div class="card-actions">
-      <button class="btn-action btn-download" onclick="downloadCard()">⬇ Download Card</button>
-      <button class="btn-action btn-share" onclick="shareCard()">↗ Share</button>
-      <button class="btn-action btn-new" onclick="resetCard()">✦ New Name</button>
+    <section id="cardSection" class="card-section hidden" aria-live="polite">
+      <div class="card" id="nameCard">
+
+        <div class="card-header">
+          <div class="card-sparkles">
+            <span class="sparkle s1">✦</span>
+            <span class="sparkle s2">◆</span>
+            <span class="sparkle s3">✦</span>
+          </div>
+          <div class="card-name-display" id="cardName">—</div>
+          <div class="card-origin" id="cardOrigin">—</div>
+          <div class="card-meaning-headline" id="cardMeaning">—</div>
+        </div>
+
+        <div class="card-body">
+
+          <div class="card-block">
+            <div class="block-label">✦ Personality Traits</div>
+            <div class="traits-list" id="cardTraits"></div>
+          </div>
+
+          <div class="card-stats">
+            <div class="stat-box">
+              <div class="stat-icon">🎨</div>
+              <div class="stat-value" id="cardColor">—</div>
+              <div class="stat-label">Lucky Color</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon">🔢</div>
+              <div class="stat-value" id="cardNumber">—</div>
+              <div class="stat-label">Lucky Number</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-icon">💎</div>
+              <div class="stat-value" id="cardStone">—</div>
+              <div class="stat-label">Lucky Stone</div>
+            </div>
+          </div>
+
+          <div class="card-element-row">
+            <div class="element-badge" id="cardElement">—</div>
+            <div class="element-label">Soul Element</div>
+          </div>
+
+          <div class="card-block">
+            <div class="block-label">🌍 Famous People</div>
+            <div class="famous-list" id="cardFamous"></div>
+          </div>
+
+          <div class="card-quote">
+            <div class="quote-mark">"</div>
+            <div class="quote-text" id="cardQuote">—</div>
+          </div>
+
+        </div>
+
+        <div class="card-footer">
+          <div class="footer-brand">✦ Nameura</div>
+          <div class="footer-url">nameura.app</div>
+        </div>
+
+      </div>
+
+      <div class="card-actions">
+        <button class="action-btn primary" id="downloadBtn" aria-label="Download card as image">
+          <span>⬇</span> Download Card
+        </button>
+        <button class="action-btn secondary" id="shareBtn" aria-label="Share card">
+          <span>↗</span> Share
+        </button>
+        <button class="action-btn ghost" id="resetBtn" aria-label="Try another name">
+          ↩ Try Another
+        </button>
+      </div>
+    </section>
+
+    <div id="errorState" class="error-state hidden" aria-live="assertive">
+      <div class="error-icon">⚠</div>
+      <p id="errorMessage">Something went wrong. Please try again.</p>
+      <button class="action-btn secondary" id="errorResetBtn">Try Again</button>
     </div>
-  </div>
-</div>
 
-<script>
-const colorMap = {
-  'red': '#e05252', 'crimson': '#c0392b', 'scarlet': '#c0392b',
-  'blue': '#4a90d9', 'navy': '#2c3e7a', 'sky blue': '#5ba4d4', 'cobalt': '#2a4faa',
-  'green': '#4aad6a', 'emerald': '#27ae6a', 'forest green': '#2d7a4a', 'sage': '#7aaa7a',
-  'purple': '#8e5cbf', 'violet': '#7b4fb5', 'lavender': '#b89ad4',
-  'gold': '#d4a843', 'yellow': '#e8c43a', 'amber': '#e8a020',
-  'orange': '#e8855a', 'coral': '#e07060', 'peach': '#e8a090',
-  'pink': '#e87aaa', 'rose': '#e8608a', 'fuchsia': '#c84ab0',
-  'white': '#f0ece8', 'silver': '#a0a0b0', 'gray': '#808090', 'grey': '#808090',
-  'black': '#303040', 'indigo': '#4a40a0', 'turquoise': '#4aada8', 'teal': '#3a9a90',
-  'brown': '#8a5a3a', 'bronze': '#a07040', 'copper': '#b06040',
-};
+  </main>
 
-function getColorHex(colorName) {
-  const lower = colorName.toLowerCase();
-  for (const [key, val] of Object.entries(colorMap)) {
-    if (lower.includes(key)) return val;
-  }
-  return '#8e5cbf';
-}
+  <footer>
+    <p>Made with ✦ by Nameura &nbsp;·&nbsp; Share your card &amp; spread the magic</p>
+  </footer>
 
-async function generateCard() {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name) {
-    document.getElementById('nameInput').focus();
-    return;
-  }
-
-  document.getElementById('cardOuter').classList.remove('show');
-  document.getElementById('errorMsg').classList.remove('show');
-  document.getElementById('loading').classList.add('show');
-  document.getElementById('discoverBtn').disabled = true;
-
-  try {
-    const prompt = `You are a mystical name analyst. Given the name "${name}", generate a beautiful name meaning card. Respond ONLY with a valid JSON object, no markdown, no explanation, nothing else.
-
-{
-  "name": "${name}",
-  "origin": "cultural origin (1-2 words)",
-  "meaning": "poetic meaning of the name (5-10 words)",
-  "traits": ["trait1", "trait2", "trait3", "trait4", "trait5"],
-  "luckyColor": "one color name",
-  "luckyNumber": number between 1-9,
-  "element": "one of: Fire, Water, Earth, Air, Spirit",
-  "birthstone": "a gemstone name",
-  "quote": "an inspiring original quote that fits this name's energy (1-2 sentences)",
-  "famousPeople": ["Famous Person 1", "Famous Person 2", "Famous Person 3"]
-}`;
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-
-    const data = await response.json();
-    const text = data.content.map(i => i.text || "").join("").replace(/```json|```/g, "").trim();
-    const info = JSON.parse(text);
-
-    // Populate card
-    document.getElementById('cardOrigin').textContent = info.origin;
-    document.getElementById('cardName').textContent = info.name;
-    document.getElementById('cardMeaning').textContent = `"${info.meaning}"`;
-
-    // Traits
-    const traitsEl = document.getElementById('cardTraits');
-    traitsEl.innerHTML = info.traits.map(t => `<span class="trait-pill">${t}</span>`).join('');
-
-    // Color
-    document.getElementById('cardColor').textContent = info.luckyColor;
-    document.getElementById('colorDot').style.background = getColorHex(info.luckyColor);
-
-    document.getElementById('cardNumber').textContent = info.luckyNumber;
-    document.getElementById('cardLuckyNum').textContent = info.luckyNumber;
-    document.getElementById('cardElement').textContent =
-      ({Fire:'🔥 Fire', Water:'💧 Water', Earth:'🌿 Earth', Air:'🌬️ Air', Spirit:'✨ Spirit'}[info.element] || info.element);
-    document.getElementById('cardBirthstone').textContent = '💎 ' + info.birthstone;
-    document.getElementById('cardQuote').textContent = `"${info.quote}"`;
-
-    // Famous
-    const famousEl = document.getElementById('cardFamous');
-    famousEl.innerHTML = info.famousPeople.map(p => `<span class="famous-tag">${p}</span>`).join('');
-
-    document.getElementById('loading').classList.remove('show');
-    document.getElementById('cardOuter').classList.add('show');
-
-  } catch (err) {
-    document.getElementById('loading').classList.remove('show');
-    const errEl = document.getElementById('errorMsg');
-    errEl.textContent = '✦ Something went wrong. Please try again!';
-    errEl.classList.add('show');
-  }
-
-  document.getElementById('discoverBtn').disabled = false;
-}
-
-function tryName(name) {
-  document.getElementById('nameInput').value = name;
-  generateCard();
-}
-
-function resetCard() {
-  document.getElementById('cardOuter').classList.remove('show');
-  document.getElementById('nameInput').value = '';
-  document.getElementById('nameInput').focus();
-}
-
-async function downloadCard() {
-  const card = document.getElementById('name-card');
-  try {
-    const canvas = await html2canvas(card, {
-      backgroundColor: '#120f22',
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
-    const link = document.createElement('a');
-    link.download = `namara-${document.getElementById('cardName').textContent.toLowerCase()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  } catch(e) {
-    alert('Download ready! Right-click the card and save as image.');
-  }
-}
-
-function shareCard() {
-  const name = document.getElementById('cardName').textContent;
-  const meaning = document.getElementById('cardMeaning').textContent;
-  const text = `✦ My name "${name}" means ${meaning} — discover yours at Namara!`;
-  if (navigator.share) {
-    navigator.share({ title: 'My Name Story', text });
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-    const btn = document.querySelector('.btn-share');
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.innerHTML = '↗ Share', 2000);
-  }
-}
-
-// Enter key support
-document.getElementById('nameInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') generateCard();
-});
-</script>
+  <script src="app.js"></script>
 </body>
 </html>
